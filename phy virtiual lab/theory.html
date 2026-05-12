@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory & Procedure — Virtual Lab</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .theory-hero {
+            padding: 3rem 0 2rem;
+            text-align: center;
+        }
+        .theory-hero h1 { margin-bottom: 0.5rem; }
+        .theory-hero p { color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
+
+        .lock-notice {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 1rem 1.5rem;
+            background: rgba(194, 65, 12, 0.08);
+            border: 1px solid rgba(194, 65, 12, 0.2);
+            border-radius: var(--radius-sm);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .accordion-body-inner ul {
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        .accordion-body-inner ul li {
+            margin-bottom: 0.4rem;
+        }
+        .accordion-body-inner strong {
+            color: var(--text);
+        }
+
+        .formula-box {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .proceed-section {
+            text-align: center;
+            padding: 3rem 0 4rem;
+        }
+
+        .proceed-section p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand"><span class="dot"></span> Virtual Lab</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="theory.html" class="active">Theory</a></li>
+            <li><a href="simulation.html">Simulation</a></li>
+            <li><a href="results.html">Results</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="container">
+
+            <!-- Header -->
+            <div class="theory-hero animate-in">
+                <span class="badge badge-accent">Step 1 of 3</span>
+                <h1 class="heading-lg" style="margin-top: 1rem;">Understand the Experiment</h1>
+                <p>Read through each section below. The simulation will unlock once you have reviewed all four topics.</p>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-bar animate-in delay-1">
+                <div class="progress-step">
+                    <div class="step-circle active">1</div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle">2</div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle">3</div>
+                </div>
+            </div>
+
+            <!-- Lock Notice -->
+            <div class="lock-notice animate-in delay-2">
+                🔒 &nbsp; You must expand and read all four sections below to proceed to the simulation.
+            </div>
+
+            <!-- Accordions -->
+            <div class="animate-in delay-2">
+
+                <div class="accordion-item" id="acc-aim">
+                    <div class="accordion-header">
+                        <span>🎯 &nbsp; Aim of the Experiment</span>
+                        <span class="icon">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p><strong>Objective:</strong> To determine the <strong>line density</strong> (number of lines per unit length, denoted by ρ) of a given diffraction grating using a LASER source of known wavelength (λ = 635 nm).</p>
+                            <p style="margin-top: 1rem;">The line density is a fundamental property of any diffraction grating and is critical in spectroscopy, telecommunications, and optical engineering. By measuring how the laser light diffracts through the grating, we can calculate this value with high precision.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item" id="acc-theory">
+                    <div class="accordion-header">
+                        <span>📖 &nbsp; Theory & Principle</span>
+                        <span class="icon">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p><strong>Diffraction</strong> is the bending of light waves around obstacles or through narrow openings. A <strong>diffraction grating</strong> is an optical element with a large number of equally spaced parallel slits.</p>
+                            <p style="margin-top: 1rem;">When monochromatic light (such as from a LASER) passes through a grating, it produces a pattern of bright spots called <strong>maxima</strong> on a distant screen. The central bright spot is the <strong>zeroth order</strong> maximum, and the spots on either side are the <strong>first order</strong> (n=1) maxima.</p>
+
+                            <div class="formula-box">d · sin(θ) = n · λ</div>
+                            <p>Where: <strong>d</strong> = grating element (distance between adjacent slits), <strong>θ</strong> = angle of diffraction, <strong>n</strong> = order of diffraction, <strong>λ</strong> = wavelength of light.</p>
+
+                            <p style="margin-top: 1rem;">Since the spot distance <strong>x</strong> from center and screen distance <strong>D</strong> are measurable:</p>
+                            <div class="formula-box">tan(θ) = x / D &nbsp; → &nbsp; θ = tan⁻¹(x / D)</div>
+
+                            <p style="margin-top: 1rem;">The <strong>line density</strong> ρ is the reciprocal of d:</p>
+                            <div class="formula-box">ρ = 1/d = sin(θ) / (n · λ)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item" id="acc-apparatus">
+                    <div class="accordion-header">
+                        <span>🔧 &nbsp; Apparatus Required</span>
+                        <span class="icon">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <ul>
+                                <li><strong>LASER Source</strong> — He-Ne or Diode Laser (λ = 635 nm)</li>
+                                <li><strong>Diffraction Grating</strong> — Standard transmission grating</li>
+                                <li><strong>Optical Bench</strong> — A stable, aligned rail for mounting components</li>
+                                <li><strong>White Screen</strong> — For observing the diffraction pattern</li>
+                                <li><strong>Measuring Scale</strong> — Meter ruler for measuring D and x</li>
+                                <li><strong>Grating Holder &amp; Stands</strong> — For precise alignment</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item" id="acc-procedure">
+                    <div class="accordion-header">
+                        <span>📋 &nbsp; Step-by-Step Procedure</span>
+                        <span class="icon">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <ol style="padding-left: 1.5rem;">
+                                <li style="margin-bottom: 0.8rem;">Mount the <strong>laser source</strong> at one end of the optical bench and the <strong>diffraction grating</strong> in its holder perpendicular to the laser beam.</li>
+                                <li style="margin-bottom: 0.8rem;">Place the <strong>white screen</strong> at a measured distance <strong>D</strong> from the grating (e.g., 15 cm).</li>
+                                <li style="margin-bottom: 0.8rem;">Switch on the laser. Align it so the beam passes straight through the grating centre.</li>
+                                <li style="margin-bottom: 0.8rem;">Observe the <strong>diffraction pattern</strong> on the screen — a bright central spot and first-order spots on either side.</li>
+                                <li style="margin-bottom: 0.8rem;">Measure the distance of the <strong>left spot (x₁)</strong> and <strong>right spot (x₂)</strong> from the central maximum using the scale.</li>
+                                <li style="margin-bottom: 0.8rem;">Move the screen to a new distance D and <strong>repeat</strong> the measurement.</li>
+                                <li>Record at least <strong>3 observations</strong> at different values of D.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Proceed Button -->
+            <div class="proceed-section animate-in delay-3">
+                <p>Complete all sections above to unlock the simulation.</p>
+                <button id="proceedSimBtn" class="btn btn-primary" disabled onclick="navigateTo('simulation.html')">
+                    🔬 &nbsp; Proceed to Simulation →
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

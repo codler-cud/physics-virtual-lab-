@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation — Virtual Lab</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .sim-hero { padding: 2rem 0 1rem; text-align: center; }
+        .sim-hero h1 { margin-bottom: 0.5rem; }
+
+        .sim-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .viewport {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .viewport canvas {
+            width: 100%;
+            display: block;
+        }
+
+        #bench-canvas { height: 280px; }
+
+        .screen-view-label {
+            padding: 0.8rem 1.5rem;
+            background: var(--bg-subtle);
+            border-top: 1px solid var(--border);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #screen-canvas {
+            height: 200px;
+            background: #1c1917;
+        }
+
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .control-card h4 {
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .info-row:last-child { border: none; }
+        .info-row .label { color: var(--text-secondary); }
+        .info-row .value { font-weight: 700; color: var(--accent); font-family: 'Outfit', sans-serif; }
+
+        .obs-section {
+            margin-top: 3rem;
+            padding-bottom: 4rem;
+        }
+
+        .obs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .obs-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        #proceed-results-btn { display: none; }
+
+        /* Laser Toggle */
+        .laser-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.2rem;
+            background: var(--bg-subtle);
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+        }
+
+        .laser-toggle .label-text {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: #d6d3d1;
+            border-radius: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 3px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: #ef4444;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(24px);
+        }
+
+        .laser-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .laser-status.on {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+        }
+
+        .laser-status.off {
+            background: rgba(120, 113, 108, 0.12);
+            color: #78716c;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand"><span class="dot"></span> Virtual Lab</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="theory.html">Theory</a></li>
+            <li><a href="simulation.html" class="active">Simulation</a></li>
+            <li><a href="results.html">Results</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="container">
+
+            <div class="sim-hero animate-in">
+                <span class="badge badge-teal">Step 2 of 3</span>
+                <h1 class="heading-lg" style="margin-top: 1rem;">Virtual Optical Bench</h1>
+                <p class="text-secondary">Adjust parameters, observe the diffraction pattern, and record your measurements.</p>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-bar animate-in delay-1">
+                <div class="progress-step"><div class="step-circle done">✓</div><div class="step-line done"></div></div>
+                <div class="progress-step"><div class="step-circle active">2</div><div class="step-line"></div></div>
+                <div class="progress-step"><div class="step-circle">3</div></div>
+            </div>
+
+            <!-- Simulation Area -->
+            <div class="sim-layout animate-in delay-2">
+
+                <div class="viewport">
+                    <canvas id="bench-canvas"></canvas>
+                    <div class="screen-view-label">🖥️ &nbsp; Zoomed Screen View — Use the ruler below to measure x₁ and x₂</div>
+                    <canvas id="screen-canvas"></canvas>
+                </div>
+
+                <div class="controls-panel">
+                    <div class="control-card">
+                        <h4>⚙️ Experiment Controls</h4>
+
+                        <div class="laser-toggle">
+                            <div>
+                                <span class="label-text">🔴 Laser Power</span>
+                                <span class="laser-status off" id="laser-status-badge">OFF</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="laser-toggle" onchange="toggleLaser()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="slider-group">
+                            <label>Distance D (Grating → Screen)</label>
+                            <input type="range" id="slider-D" min="10" max="50" step="1" value="15" oninput="updateSimulation()">
+                            <div class="readout"><span id="readout-D">15</span> cm</div>
+                        </div>
+                        <div class="slider-group">
+                            <label>Wavelength λ</label>
+                            <input type="range" id="slider-lambda" min="400" max="700" step="1" value="635" oninput="updateSimulation()">
+                            <div class="readout"><span id="readout-lambda">635</span> nm</div>
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <h4>📐 Live Readings</h4>
+                        <div class="info-row">
+                            <span class="label">Diffraction Angle θ</span>
+                            <span class="value"><span id="readout-theta">--</span>°</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Order (n)</span>
+                            <span class="value">1</span>
+                        </div>
+                    </div>
+
+                    <div class="control-card" style="background: rgba(194, 65, 12, 0.05); border-color: rgba(194, 65, 12, 0.15);">
+                        <h4 style="color: var(--accent);">💡 How to Measure</h4>
+                        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+                            1. Look at the <strong>Zoomed Screen View</strong>.<br>
+                            2. The center spot is at <strong>0</strong> on the scale.<br>
+                            3. Read <strong>x₁</strong> (left spot distance from 0) and <strong>x₂</strong> (right spot distance from 0).<br>
+                            4. Enter values in the table below and lock the row.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Observation Table -->
+            <div class="obs-section animate-in delay-3">
+                <div class="obs-header">
+                    <div>
+                        <h2 class="heading-md">Observation Table</h2>
+                        <p class="text-secondary" style="font-size: 0.9rem;">Enter your measured values. Lock each row after filling. Minimum 3 observations required.</p>
+                    </div>
+                    <div class="obs-actions">
+                        <span id="obs-status" style="font-weight: 600; font-size: 0.9rem;"></span>
+                        <button class="btn btn-secondary btn-sm" onclick="resetObservations()">↺ Reset</button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Trial</th>
+                                <th>D (cm)</th>
+                                <th>x₁ (cm)</th>
+                                <th>x₂ (cm)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="obs-tbody">
+                            <tr>
+                                <td>1</td>
+                                <td><input type="number" id="inp-d-1" value="15" min="5" max="50"></td>
+                                <td><input type="number" id="inp-x1-1" step="0.1" placeholder="Read x₁"></td>
+                                <td><input type="number" id="inp-x2-1" step="0.1" placeholder="Read x₂"></td>
+                                <td><button class="btn btn-primary btn-sm" id="lock-btn-1" onclick="lockRow()">Lock ✓</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <a href="results.html" class="btn btn-teal" id="proceed-results-btn">
+                        📊 &nbsp; Auto-Calculate & View Results →
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="simulation.js"></script>
+</body>
+</html>

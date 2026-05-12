@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results & Analysis — Virtual Lab</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .results-hero { padding: 2rem 0 1rem; text-align: center; }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .results-grid { grid-template-columns: 1fr; }
+        }
+
+        .calc-table th { text-align: left; padding-left: 1.5rem; }
+        .calc-table td { text-align: left; padding-left: 1.5rem; }
+        .calc-table .result-val { font-weight: 700; color: var(--accent); font-family: 'Outfit', sans-serif; }
+
+        .step-box {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            color: var(--text);
+        }
+
+        .big-result {
+            text-align: center;
+            padding: 2.5rem;
+            background: linear-gradient(135deg, rgba(194,65,12,0.06), rgba(13,148,136,0.06));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-top: 2rem;
+        }
+
+        .big-result .number {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .big-result .unit {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-top: 0.3rem;
+        }
+
+        .error-section {
+            margin-top: 2rem;
+        }
+
+        .error-formula {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            font-family: 'Courier New', monospace;
+            color: var(--accent);
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .error-input-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin: 1rem 0;
+        }
+
+        .error-input-row input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: var(--bg-subtle);
+            color: var(--text);
+        }
+
+        .error-input-row input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .auto-error {
+            display: none;
+            padding: 1rem 1.5rem;
+            background: rgba(13, 148, 136, 0.08);
+            border: 1px solid rgba(13, 148, 136, 0.2);
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .auto-error .val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--teal);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .final-statement {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            box-shadow: var(--shadow-sm);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand"><span class="dot"></span> Virtual Lab</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="theory.html">Theory</a></li>
+            <li><a href="simulation.html">Simulation</a></li>
+            <li><a href="results.html" class="active">Results</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="container">
+
+            <div class="results-hero animate-in">
+                <span class="badge badge-teal">Step 3 of 3</span>
+                <h1 class="heading-lg" style="margin-top: 1rem;">Analysis & Results</h1>
+                <p class="text-secondary">Auto-calculated observations, graphical analysis, and error computation.</p>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-bar animate-in delay-1">
+                <div class="progress-step"><div class="step-circle done">✓</div><div class="step-line done"></div></div>
+                <div class="progress-step"><div class="step-circle done">✓</div><div class="step-line done"></div></div>
+                <div class="progress-step"><div class="step-circle active">3</div></div>
+            </div>
+
+            <!-- Calculated Observation Table -->
+            <div class="card animate-in delay-2" style="margin-top: 2rem;">
+                <h3 style="margin-bottom: 1rem;">📋 Calculated Observation Table</h3>
+                <div class="table-wrapper">
+                    <table class="calc-table">
+                        <thead>
+                            <tr>
+                                <th>Trial</th>
+                                <th>D (cm)</th>
+                                <th>x₁ (cm)</th>
+                                <th>x₂ (cm)</th>
+                                <th>x_avg (cm)</th>
+                                <th>θ (deg)</th>
+                                <th>ρ (lines/cm)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calc-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Grid: Graph + Step-by-step -->
+            <div class="results-grid animate-in delay-3">
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem;">📈 Graphical Analysis</h3>
+                    <canvas id="results-chart"></canvas>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem;">🧮 Step-by-Step Calculation</h3>
+                    <p class="text-secondary" style="font-size: 0.85rem;">Showing calculation for Trial 1:</p>
+                    <div class="step-box" id="step-box"></div>
+                </div>
+            </div>
+
+            <!-- Average Result -->
+            <div class="big-result animate-in delay-4">
+                <p class="text-secondary" style="margin-bottom: 0.5rem;">Average Measured Line Density (ρ)</p>
+                <div class="number" id="avg-rho">--</div>
+                <div class="unit">lines / cm</div>
+            </div>
+
+            <!-- Error Calculation -->
+            <div class="card error-section animate-in">
+                <h3>📐 Error Calculation</h3>
+                <p class="text-secondary" style="margin-top: 0.5rem; font-size: 0.9rem;">Standard (actual) value: <strong>ρ_actual = 6000 lines/cm</strong></p>
+
+                <div class="error-formula">% Error = [ |ρ_measured − ρ_actual| / ρ_actual ] × 100</div>
+
+                <p style="font-size: 0.9rem; margin-top: 1rem;">Try calculating it yourself first:</p>
+                <div class="error-input-row">
+                    <input type="number" id="student-error" placeholder="Enter your calculated % error">
+                    <button class="btn btn-primary btn-sm" onclick="verifyError()">Verify</button>
+                </div>
+                <p id="student-feedback" style="font-size: 0.85rem; margin-top: 0.5rem;"></p>
+
+                <div class="auto-error" id="auto-error-box">
+                    <p class="text-secondary" style="font-size: 0.85rem;">Auto-Calculated Percentage Error:</p>
+                    <div class="val" id="auto-error-val">--</div>
+                </div>
+            </div>
+
+            <!-- Final Result -->
+            <div class="final-statement animate-in" id="final-statement">
+                <!-- Filled by JS -->
+            </div>
+
+            <!-- Actions -->
+            <div style="text-align: center; padding: 3rem 0;">
+                <button class="btn btn-secondary" onclick="clearAll()" style="margin-right: 1rem;">↺ Reset Entire Lab</button>
+                <a href="index.html" class="btn btn-primary">🏠 Return Home</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        const ACTUAL_RHO = 6000;
+        let computedAvgRho = 0;
+        let computedError = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const raw = localStorage.getItem('virtuallab_observations');
+            const observations = raw ? JSON.parse(raw) : [];
+
+            if (observations.length === 0) {
+                document.getElementById('calc-tbody').innerHTML = '<tr><td colspan="7" style="color:var(--text-secondary);padding:2rem;">No observations found. <a href="simulation.html" style="color:var(--accent);">Go to Simulation</a> first.</td></tr>';
+                return;
+            }
+
+            const results = observations.map((obs, i) => {
+                const x_avg = (obs.x1 + obs.x2) / 2;
+                const theta = Math.atan(x_avg / obs.D);
+                const thetaDeg = (theta * 180 / Math.PI);
+                const lambda_cm = obs.lambda * 1e-7;
+                const rho = Math.round(Math.sin(theta) / lambda_cm);
+                return { ...obs, x_avg, theta, thetaDeg, rho, trial: i + 1 };
+            });
+
+            // Populate table
+            const tbody = document.getElementById('calc-tbody');
+            results.forEach(r => {
+                tbody.innerHTML += `<tr>
+                    <td>${r.trial}</td>
+                    <td>${r.D}</td>
+                    <td>${r.x1}</td>
+                    <td>${r.x2}</td>
+                    <td class="result-val">${r.x_avg.toFixed(2)}</td>
+                    <td class="result-val">${r.thetaDeg.toFixed(2)}°</td>
+                    <td class="result-val">${r.rho}</td>
+                </tr>`;
+            });
+
+            // Average
+            computedAvgRho = Math.round(results.reduce((s, r) => s + r.rho, 0) / results.length);
+            document.getElementById('avg-rho').textContent = computedAvgRho;
+
+            // Error
+            computedError = ((Math.abs(computedAvgRho - ACTUAL_RHO) / ACTUAL_RHO) * 100);
+            document.getElementById('auto-error-val').textContent = computedError.toFixed(2) + ' %';
+
+            // Step-by-step for trial 1
+            const r = results[0];
+            const lambda_cm = r.lambda * 1e-7;
+            document.getElementById('step-box').textContent =
+`Trial 1:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Given:
+  D = ${r.D} cm,  x₁ = ${r.x1} cm,  x₂ = ${r.x2} cm
+  λ = ${r.lambda} nm = ${lambda_cm.toExponential(2)} cm
+
+Step 1: Average spot distance from center
+  x_avg = (x₁ + x₂) / 2
+        = (${r.x1} + ${r.x2}) / 2
+        = ${r.x_avg.toFixed(2)} cm
+
+Step 2: Diffraction angle
+  θ = tan⁻¹(x_avg / D)
+    = tan⁻¹(${r.x_avg.toFixed(2)} / ${r.D})
+    = ${r.thetaDeg.toFixed(2)}°
+
+Step 3: Line density
+  ρ = sin(θ) / (n × λ)
+    = sin(${r.thetaDeg.toFixed(2)}°) / (1 × ${lambda_cm.toExponential(2)})
+    = ${r.rho} lines/cm`;
+
+            // Chart
+            new Chart(document.getElementById('results-chart'), {
+                type: 'bar',
+                data: {
+                    labels: results.map(r => 'D = ' + r.D + ' cm'),
+                    datasets: [
+                        {
+                            label: 'x_avg (cm)',
+                            data: results.map(r => r.x_avg),
+                            backgroundColor: 'rgba(194, 65, 12, 0.7)',
+                            borderRadius: 8,
+                            barPercentage: 0.5
+                        },
+                        {
+                            label: 'θ (degrees)',
+                            data: results.map(r => r.thetaDeg),
+                            backgroundColor: 'rgba(13, 148, 136, 0.7)',
+                            borderRadius: 8,
+                            barPercentage: 0.5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { font: { family: 'Outfit' } } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Final statement
+            document.getElementById('final-statement').innerHTML = `
+                <h3 style="margin-bottom: 1rem;">📝 Final Result</h3>
+                <p>The <strong>line density</strong> of the given diffraction grating was experimentally determined to be
+                <strong style="color: var(--accent); font-size: 1.2rem;">${computedAvgRho} lines/cm</strong>
+                using a LASER source of wavelength <strong>${results[0].lambda} nm</strong>.</p>
+                <p style="margin-top: 0.8rem;">The percentage error compared to the standard value (6000 lines/cm) is
+                <strong style="color: var(--teal);">${computedError.toFixed(2)}%</strong>.</p>
+            `;
+        });
+
+        function verifyError() {
+            const input = parseFloat(document.getElementById('student-error').value);
+            const feedback = document.getElementById('student-feedback');
+
+            if (isNaN(input)) {
+                feedback.textContent = 'Please enter a number.';
+                feedback.style.color = '#ef4444';
+                return;
+            }
+
+            const diff = Math.abs(input - computedError);
+            if (diff < 1) {
+                feedback.textContent = '✓ Excellent! Your calculation is correct.';
+                feedback.style.color = '#0d9488';
+            } else {
+                feedback.textContent = '✗ Not quite. Check your formula and try again, or click below to see the answer.';
+                feedback.style.color = '#ef4444';
+            }
+
+            document.getElementById('auto-error-box').style.display = 'block';
+        }
+
+        function clearAll() {
+            localStorage.removeItem('virtuallab_observations');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
